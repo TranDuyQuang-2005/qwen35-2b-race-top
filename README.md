@@ -1,19 +1,12 @@
-# Qwen3.5-2B Race v4 - Prefix Warmup Proxy
+# Qwen3.5-2B Race Top Serving Stack
+Mục tiêu cấu hình:
 
-This image is based on `vllm/vllm-openai:v0.22.1` and keeps the real vLLM OpenAI-compatible server.
+- Serve trực tiếp bằng vLLM OpenAI-compatible API.
+- Giữ BF16 model weights để bảo toàn accuracy.
+- Dùng FP8 KV cache để tăng khả năng xử lý đồng thời.
+- Bật prefix caching để giảm prefill khi prompt có phần lặp.
+- Bật chunked prefill để cân bằng TTFT và TPOT.
+- Giới hạn `max_model_len=32768` để tránh lãng phí KV cache trên 18GB VRAM.
+- Giảm overhead log khi benchmark.
 
-Main changes versus v3:
 
-- Run vLLM internally on port 8001.
-- Warm the public trace common system prefix before exposing port 8000.
-- Expose a lightweight proxy on port 8000 only after vLLM is ready and prefix warmup is finished.
-- Keep BF16 model weights for accuracy.
-- Keep FP8 KV cache, prefix caching, chunked prefill, and low-latency scheduling.
-
-Docker Hub target image:
-
-```text
-duquang/qwen35-2b-race-top:v4
-```
-
-Submit `docker-compose.yml` after GitHub Actions pushes the image.
